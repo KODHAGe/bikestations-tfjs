@@ -1,6 +1,14 @@
+// TF
 const tf = require('@tensorflow/tfjs')
 require('@tensorflow/tfjs-node')
 
+// File handling
+const { promisify } = require('util')
+const fs = require('fs')
+const readFile = promisify(fs.readFile)
+const writeFile = promisify(fs.writeFile)
+
+// Data
 const data = require('./data/export_5.json')
 const json = JSON.parse(data)
 
@@ -9,6 +17,7 @@ function dataToTensor(json) {
     let xs = []
     let keys = []
     json.forEach(row => {
+        
         // Take bikesavailable as output value (y)
         ys.push([row['X.bikesAvailable.']])
         ys = ys.map(Number)
@@ -83,7 +92,10 @@ async function dothemodel() {
     const ys = tf.tensor2d(arraydata.ys, arraydata.yShape)
 
     // Train
-    await model.fit(xs, ys, { epochs: 500 })
+    await model.fit(xs, ys, { epochs: 5 })
+    let version = await readFile('./version.tag')
+    await model.save('file://model/bikes-' + version)
+    await writeFile('./version.tag', parseInt(version) + 1, 'utf8')
 
     // Infer
     let prediction_index = 1
