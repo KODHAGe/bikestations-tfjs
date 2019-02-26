@@ -1,3 +1,14 @@
+# package directories
 node_modules
-secrets
+jspm_packages
+
+# Serverless directories
+.serverless
+
+.DS_Store
+
 data
+model
+keys.json
+
+bikestations-tfjs
